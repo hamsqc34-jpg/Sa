@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>চিতোষী উপজেলা চাই - পোস্ট মেকার</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #f0fdf4;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <div class="bg-white p-6 rounded-2xl shadow-lg border border-green-100 flex flex-col justify-between">
+            <div>
+                <h2 class="text-2xl font-bold text-center text-green-700 mb-6">তথ্য যুক্ত করুন</h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-1">নাম</label>
+                        <input type="text" id="inputName" placeholder="আপনার নাম লিখুন" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-1">মন্তব্য</label>
+                        <textarea id="inputComment" rows="3" placeholder="আপনার মন্তব্য বা মতামত লিখুন" 
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-1">ছবি আপলোড করুন</label>
+                        <input type="file" id="inputImage" accept="image/*" 
+                               class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer">
+                    </div>
+
+                    <button onclick="updatePost()" 
+                            class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-md cursor-pointer">
+                        পোস্টে যুক্ত করুন
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-lg border border-green-100 flex flex-col items-center justify-between">
+            <h2 class="text-xl font-bold text-gray-700 mb-4 text-center">লাইভ পোস্ট ভিউ</h2>
+            
+            <div id="posterCard" class="w-full max-w-sm bg-gradient-to-b from-green-50 to-green-100 rounded-2xl p-6 border-4 border-green-600 shadow-inner relative overflow-hidden flex flex-col justify-between aspect-square">
+                
+                <div class="flex justify-between items-start gap-4 z-10">
+                    <div class="w-24 h-24 bg-white rounded-full border-4 border-white shadow-md flex items-center justify-center overflow-hidden shrink-0">
+                        <img id="viewImage" src="https://via.placeholder.com/150?text=ছবির+ঘর" alt="User Photo" class="w-full h-full object-cover">
+                    </div>
+                    
+                    <div class="flex-1 bg-white/90 p-3 rounded-xl border border-green-200 min-h-[96px] max-h-[120px] overflow-y-auto">
+                        <p class="text-xs text-gray-500 font-bold mb-0.5">মন্তব্য:</p>
+                        <p id="viewComment" class="text-sm text-gray-700 font-medium leading-relaxed">চিতোষী এলাকার সার্বিক উন্নয়নের লক্ষ্যে অবিলম্বে উপজেলা ঘোষণা করা হোক।</p>
+                    </div>
+                </div>
+
+                <div class="my-4 text-center flex flex-col items-center justify-center relative z-10">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-red-600 text-white font-black text-2xl px-4 py-1 rounded-md shadow-sm transform -rotate-1 tracking-wide">
+                            চিতোষী নামে
+                        </div>
+                        <div class="text-green-600 text-3xl animate-bounce">
+                            <i class="fa-solid fa-fist-raised"></i>
+                        </div>
+                    </div>
+                    <div class="text-green-700 font-black text-3xl mt-1 tracking-wider drop-shadow-sm">
+                        উপজেলা চাই
+                    </div>
+                </div>
+
+                <div class="w-full bg-green-700 text-white text-center py-2 rounded-xl font-bold text-base shadow-md z-10">
+                    <span id="viewName">আপনার নাম</span>
+                </div>
+            </div>
+
+            <button onclick="downloadJPEG()" 
+                    class="mt-6 w-full max-w-sm bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-download"></i> পোস্টার ডাউনলোড করুন (JPEG)
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // ফর্মের তথ্য লাইভ ভিউতে আপডেট করার ফাংশন
+        function updatePost() {
+            const name = document.getElementById('inputName').value.trim();
+            const comment = document.getElementById('inputComment').value.trim();
+            const imageInput = document.getElementById('inputImage');
+            
+            if(name !== "") {
+                document.getElementById('viewName').innerText = name;
+            } else {
+                document.getElementById('viewName').innerText = "আপনার নাম";
+            }
+
+            if(comment !== "") {
+                document.getElementById('viewComment').innerText = comment;
+            } else {
+                document.getElementById('viewComment').innerText = "চিতোষী এলাকার সার্বিক উন্নয়নের লক্ষ্যে অবিলম্বে উপজেলা ঘোষণা করা হোক।";
+            }
+
+            if (imageInput.files && imageInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('viewImage').src = e.target.result;
+                }
+                reader.readAsDataURL(imageInput.files[0]);
+            }
+        }
+
+        // পোস্টার কার্ডটিকে JPEG হিসেবে ডাউনলোড করার ফাংশن
+        function downloadJPEG() {
+            const poster = document.getElementById('posterCard');
+            
+            // সুন্দর ও নিখুঁত কোয়ালিটির ছবির জন্য অপশন সেট করা হয়েছে
+            html2canvas(poster, {
+                useCORS: true, 
+                scale: 2, // ছবির রেজোলিউশন ডাবল করার জন্য
+                backgroundColor: '#f0fdf4'
+            }).then(canvas => {
+                // ক্যানভাসকে JPEG ফরম্যাটে রূপান্তর
+                const link = document.createElement('a');
+                link.download = 'chitoshi_upazila_poster.jpg';
+                link.href = canvas.toDataURL('image/jpeg', 0.9); // ০.৯ মানে ৯০% হাই কোয়ালিটি ছবি
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
