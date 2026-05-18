@@ -3,388 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আইডি কার্ড জেনারেটর এবং ডাউনলোডার</title>
+    <title>চিতোষী উপজেলা চাই - পোস্ট মেকার</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
         body {
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            max-width: 900px;
-            width: 100%;
-            justify-content: center;
-        }
-
-        /* ফরম সেকশন */
-        .form-section {
-            flex: 1;
-            min-width: 300px;
-        }
-
-        .form-section h2 {
-            margin-bottom: 20px;
-            color: #333;
-            font-size: 22px;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #666;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        .form-group input:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
-        }
-
-        /* আইডি কার্ড প্রিভিউ সেকশন */
-        .preview-section {
-            flex: 1;
-            min-width: 300px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            border: 1px dashed #ccc;
-        }
-
-        .preview-section h2 {
-            margin-bottom: 20px;
-            color: #333;
-            font-size: 20px;
-        }
-
-        /* আইডি কার্ডের ডিজাইন */
-        .id-card {
-            width: 320px;
-            height: 480px;
-            background: #fff;
-            border-radius: 14px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            overflow: hidden;
-            position: relative;
-            text-align: center;
-            border: 1px solid #e0e0e0;
-        }
-
-        /* কার্ডের উপরের অংশ (Header) */
-        .card-header {
-            background: linear-gradient(135deg, #007bff, #0056b3);
-            padding: 20px 10px;
-            color: white;
-        }
-
-        .card-header h3 {
-            font-size: 18px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .card-header p {
-            font-size: 11px;
-            opacity: 0.9;
-            margin-top: 3px;
-        }
-
-        /* ছবির অংশ */
-        .card-avatar-container {
-            margin-top: -45px;
-        }
-
-        .card-avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            border: 4px solid #fff;
-            object-fit: cover;
-            background: #eee;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        /* কার্ডের ভেতরের তথ্য */
-        .card-body {
-            padding: 15px 25px;
-        }
-
-        .card-name {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .card-role {
-            display: inline-block;
-            font-size: 12px;
-            background: #e1f0ff;
-            color: #007bff;
-            padding: 4px 12px;
-            border-radius: 50px;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        .card-details {
-            text-align: left;
-            font-size: 13px;
-            color: #555;
-            line-height: 1.8;
-        }
-
-        .card-details div {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px solid #f0f0f0;
-            padding: 4px 0;
-        }
-
-        .card-details span.label {
-            font-weight: bold;
-            color: #777;
-        }
-
-        /* কার্ডের নিচের অংশ (Footer) */
-        .card-footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background: #333;
-            color: #fff;
-            padding: 8px 0;
-            font-size: 11px;
-            letter-spacing: 1px;
-        }
-
-        /* বাটন গ্রুপ */
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            width: 100%;
-            justify-content: center;
-        }
-
-        .btn {
-            border: none;
-            padding: 10px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-            font-size: 14px;
-        }
-
-        .download-btn {
-            background: #28a745;
-            color: white;
-        }
-
-        .download-btn:hover {
-            background: #218838;
-        }
-
-        .print-btn {
-            background: #007bff;
-            color: white;
-        }
-
-        .print-btn:hover {
-            background: #0056b3;
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #f0fdf4;
         }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-8">
 
-<div class="container">
-    
-    <div class="form-section">
-        <h2>তথ্য দিন</h2>
-        <form id="idForm">
-            <div class="form-group">
-                <label for="inputOrg">প্রতিষ্ঠানের নাম</label>
-                <input type="text" id="inputOrg" value="আমার কোম্পানি লিমিটেড" placeholder="প্রতিষ্ঠানের নাম লিখুন">
-            </div>
-            <div class="form-group">
-                <label for="inputName">পূর্ণ নাম</label>
-                <input type="text" id="inputName" value="সফিকুল ইসলাম" placeholder="নাম লিখুন">
-            </div>
-            <div class="form-group">
-                <label for="inputRole">পদবী / রোল</label>
-                <input type="text" id="inputRole" value="ওয়েব ডেভেলপার" placeholder="যেমন: ম্যানেজার, ছাত্র">
-            </div>
-            <div class="form-group">
-                <label for="inputId">আইডি নাম্বার</label>
-                <input type="text" id="inputId" value="ID-202605" placeholder="আইডি নম্বর লিখুন">
-            </div>
-            <div class="form-group">
-                <label for="inputPhone">মোবাইল নাম্বার</label>
-                <input type="text" id="inputPhone" value="+৮৮০ ১৭০০-০০০০০০" placeholder="মোবাইল নম্বর">
-            </div>
-            <div class="form-group">
-                <label for="inputBlood">রক্তের গ্রুপ</label>
-                <select id="inputBlood">
-                    <option value="A+">A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+" selected>B+</option>
-                    <option value="B-">B-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="inputPhoto">প্রোফাইল ছবি আপলোড করুন</label>
-                <input type="file" id="inputPhoto" accept="image/*">
-            </div>
-        </form>
-    </div>
-
-    <div class="preview-section">
-        <h2>লাইভ প্রিভিউ</h2>
+    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
         
-        <div class="id-card" id="idCardToPrint">
-            <div class="card-header">
-                <h3 id="cardOrg">আমার কোম্পানি লিমিটেড</h3>
-                <p>আইдেন্টিটি কার্ড</p>
-            </div>
-            
-            <div class="card-avatar-container">
-                <img id="cardAvatar" src="https://via.placeholder.com/100" alt="Avatar" class="card-avatar">
-            </div>
-            
-            <div class="card-body">
-                <div class="card-name" id="cardName">সফিকুল ইসলাম</div>
-                <div class="card-role" id="cardRole">ওয়েব ডেভেলপার</div>
+        <div class="bg-white p-6 rounded-2xl shadow-lg border border-green-100 flex flex-col justify-between">
+            <div>
+                <h2 class="text-2xl font-bold text-center text-green-700 mb-6">তথ্য যুক্ত করুন</h2>
                 
-                <div class="card-details">
-                    <div><span class="label">আইডি নং:</span> <span id="cardId">ID-202605</span></div>
-                    <div><span class="label">মোবাইল:</span> <span id="cardPhone">+৮৮০ ১৭০০-০০০০০০</span></div>
-                    <div><span class="label">রক্তের গ্রুপ:</span> <span id="cardBlood">B+</span></div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-1">নাম</label>
+                        <input type="text" id="inputName" oninput="updatePost()" placeholder="আপনার নাম লিখুন" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-1">মন্তব্য</label>
+                        <textarea id="inputComment" rows="3" oninput="updatePost()" placeholder="আপনার মন্তব্য বা মতামত লিখুন" 
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-1">ছবি আপলোড করুন</label>
+                        <input type="file" id="inputImage" onchange="updatePost()" accept="image/*" 
+                               class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer">
+                    </div>
+
+                    <button onclick="updatePost()" 
+                            class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-md cursor-pointer">
+                        পোস্টে যুক্ত করুন
+                    </button>
                 </div>
             </div>
-            
-            <div class="card-footer">
-                WWW.YOURWEBSITE.COM
-            </div>
         </div>
 
-        <div class="button-group">
-            <button class="btn download-btn" id="downloadBtn">JPEG সেভ করুন</button>
-            <button class="btn print-btn" onclick="window.print()">প্রিন্ট করুন</button>
+        <div class="bg-white p-6 rounded-2xl shadow-lg border border-green-100 flex flex-col items-center justify-between">
+            <h2 class="text-xl font-bold text-gray-700 mb-4 text-center">সবাই একসাথে আওয়াজ তুলুন</h2>
+            
+            <div id="posterCard" class="w-full max-w-sm bg-gradient-to-b from-green-50 to-green-100 rounded-2xl p-6 border-4 border-green-600 shadow-inner relative flex flex-col justify-between aspect-square">
+                
+                <div class="flex justify-between items-start gap-4">
+                    <div class="w-24 h-24 bg-gray-200 rounded-full border-4 border-white shadow-md flex items-center justify-center overflow-hidden shrink-0">
+                        <img id="viewImage" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23cccccc'/></svg>" alt="User Photo" class="w-full h-full object-cover">
+                    </div>
+                    
+                    <div class="flex-1 bg-white/90 p-3 rounded-xl border border-green-200 min-h-[96px] max-h-[120px] overflow-y-auto">
+                        <p class="text-xs text-gray-500 font-bold mb-0.5">মন্তব্য:</p>
+                        <p id="viewComment" class="text-sm text-gray-700 font-medium leading-relaxed">চিতোষী এলাকার সার্বিক উন্নয়নের লক্ষ্যে অবিলম্বে উপজেলা ঘোষণা করা হোক।</p>
+                    </div>
+                </div>
+
+                <div class="my-2 text-center flex flex-col items-center justify-center relative">
+                    <div class="mb-2 max-w-[60px] max-h-[60px] overflow-hidden">
+                        <img id="logoView" src="https://i.postimg.cc/6QJ02jGV/20260518-125112.png" alt="Logo" class="w-full h-full object-contain">
+                    </div>
+
+                    <div class="bg-red-600 text-white font-black text-xl px-4 py-1 rounded-md shadow-sm transform -rotate-1 tracking-wide">
+                        চিতোষী নামে
+                    </div>
+                    <div class="text-green-700 font-black text-2xl mt-1 tracking-wider drop-shadow-sm">
+                        উপজেলা চাই
+                    </div>
+                </div>
+
+                <div class="w-full bg-green-700 rounded-xl py-2 shadow-md text-center">
+                    <span id="viewName" class="text-white font-bold text-base block w-full">আপনার নাম</span>
+                </div>
+            </div>
+
+            <button onclick="downloadJPEG()" 
+                    class="mt-6 w-full max-w-sm bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                পোস্টার ডাউনলোড করুন (JPEG)
+            </button>
         </div>
+
     </div>
 
-</div>
-
-<script>
-    // ফরমের ইনপুট এলিমেন্টগুলো ধরা
-    const inputOrg = document.getElementById('inputOrg');
-    const inputName = document.getElementById('inputName');
-    const inputRole = document.getElementById('inputRole');
-    const inputId = document.getElementById('inputId');
-    const inputPhone = document.getElementById('inputPhone');
-    const inputBlood = document.getElementById('inputBlood');
-    const inputPhoto = document.getElementById('inputPhoto');
-
-    // আইডি কার্ডের টেক্সট এলিমেন্টগুলো ধরা
-    const cardOrg = document.getElementById('cardOrg');
-    const cardName = document.getElementById('cardName');
-    const cardRole = document.getElementById('cardRole');
-    const cardId = document.getElementById('cardId');
-    const cardPhone = document.getElementById('cardPhone');
-    const cardBlood = document.getElementById('cardBlood');
-    const cardAvatar = document.getElementById('cardAvatar');
-    const downloadBtn = document.getElementById('downloadBtn');
-
-    // ইভেন্ট লিসেনার যোগ করা (টাইপ করার সাথে সাথে আপডেট হবে)
-    inputOrg.addEventListener('input', () => cardOrg.innerText = inputOrg.value || 'প্রতিষ্ঠানের নাম');
-    inputName.addEventListener('input', () => cardName.innerText = inputName.value || 'পূর্ণ নাম');
-    inputRole.addEventListener('input', () => cardRole.innerText = inputRole.value || 'পদবী');
-    inputId.addEventListener('input', () => cardId.innerText = inputId.value || '---');
-    inputPhone.addEventListener('input', () => cardPhone.innerText = inputPhone.value || '---');
-    inputBlood.addEventListener('change', () => cardBlood.innerText = inputBlood.value);
-
-    // ছবি আপলোড এবং লাইভ ভিউ করার লজিক
-    inputPhoto.addEventListener('change', function() {
-        const file = this.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                cardAvatar.setAttribute('src', e.target.result);
-            }
-            reader.readAsDataURL(file);
-        }
-    });
-
-    // আইডি কার্ডটি JPEG ইমেজ হিসেবে ফোনে বা কম্পিউটারে ডাউনলোড করার লজিক
-    downloadBtn.addEventListener('click', function() {
-        const card = document.getElementById('idCardToPrint');
-        
-        // ইমেজ কোয়ালিটি বা ক্লিয়ারিটি ২ গুণ (scale: 2) বৃদ্ধি করা হয়েছে যেন ফেটে না যায়
-        html2canvas(card, {
-            scale: 2,
-            useCORS: true,
-            allowTaint: true
-        }).then(canvas => {
-            // ক্যানভাসকে JPEG ফরম্যাটে রূপান্তর (কোয়ালিটি ৯০%)
-            const image = canvas.toDataURL('image/jpeg', 0.9);
+    <script>
+        function updatePost() {
+            const name = document.getElementById('inputName').value.trim();
+            const comment = document.getElementById('inputComment').value.trim();
+            const imageInput = document.getElementById('inputImage');
             
-            // একটি ভার্চুয়াল লিঙ্ক তৈরি করে অটোমেটিক ডাউনলোড ট্রগার করা
-            const link = document.createElement('a');
-            // সদস্যের নামানুসারে ফাইলের নাম তৈরি হবে (স্পেসের জায়গায় আন্ডারস্কোর হবে)
-            const memberName = inputName.value.trim().replace(/\s+/g, '_') || 'id_card';
-            link.download = `${memberName}_id_card.jpg`;
-            link.href = image;
-            link.click();
-        }).catch(error => {
-            console.error('ইমেজ তৈরিতে সমস্যা হয়েছে:', error);
-            alert('দুঃখিত, ইমেজটি ডাউনলোড করা যায়নি। আবার চেষ্টা করুন।');
-        });
-    });
-</script>
+            if(name !== "") {
+                document.getElementById('viewName').innerText = name;
+            } else {
+                document.getElementById('viewName').innerText = "আপনার নাম";
+            }
 
+            if(comment !== "") {
+                document.getElementById('viewComment').innerText = comment;
+            } else {
+                document.getElementById('viewComment').innerText = "চিতোষী এলাকার সার্বিক উন্নয়নের লক্ষ্যে অবিলম্বে উপজেলা ঘোষণা করা হোক।";
+            }
+
+            if (imageInput.files && imageInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('viewImage').src = e.target.result;
+                }
+                reader.readAsDataURL(imageInput.files[0]);
+            }
+        }
+
+        function downloadJPEG() {
+            // ইন-অ্যাপ ব্রাউজার (Facebook, Messenger, Instagram ইত্যাদি) চেক করার জন্য
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            const isLocalStorageApp = (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Instagram") > -1);
+            
+            if (isLocalStorageApp) {
+                // ইন-অ্যাপ ব্রাউজার হলে সরাসরি অ্যান্ড্রয়েড ক্রোম ব্রাউজারে রিডাইরেক্ট করবে
+                const currentUrl = window.location.href.replace(/^https?:\/\//, '');
+                const chromeIntent = "intent://" + currentUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+                
+                alert("নিরাপদ ও সঠিক ডাউনলোডের জন্য ক্রোম (Chrome) ব্রাউজার ওপেন করা হচ্ছে। অনুগ্রহ করে ক্রোম ব্রাউজারে তথ্যগুলো আরেকবার দিয়ে সেভ করুন।");
+                window.location.href = chromeIntent;
+                return;
+            }
+
+            const poster = document.getElementById('posterCard');
+            
+            // html2canvas রেন্ডারিং নিখুঁত করার জন্য কনফিগারেশন পরিবর্তন
+            html2canvas(poster, {
+                useCORS: true, 
+                allowTaint: true,
+                scale: 3, // আরও পরিষ্কার ও হাই কোয়ালিটি ছবির জন্য স্কেল বাড়িয়ে ৩ করা হলো
+                backgroundColor: '#f0fdf4',
+                logging: false
+            }).then(canvas => {
+                canvas.toBlob(function(blob) {
+                    const link = document.createElement('a');
+                    link.download = 'chitoshi_upazila_poster.jpg';
+                    link.href = URL.createObjectURL(blob);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }, 'image/jpeg', 1.0); // শতভাগ হাই কোয়ালিটি (1.0)
+            }).catch(err => {
+                console.error("ডাউনলোড করতে সমস্যা হয়েছে:", err);
+                alert("দুঃখিত, ছবি সেভ করা যায়নি। দয়া করে গুগল ক্রোম ব্রাউজার ব্যবহার করুন।");
+            });
+        }
+    </script>
 </body>
 </html>
