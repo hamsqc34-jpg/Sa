@@ -6,7 +6,6 @@
     <title>চিতোষী উপজেলা চাই - পোস্ট মেকার</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
@@ -27,19 +26,19 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-gray-700 font-semibold mb-1">নাম</label>
-                        <input type="text" id="inputName" placeholder="আপনার নাম লিখুন" 
+                        <input type="text" id="inputName" oninput="updatePost()" placeholder="আপনার নাম লিখুন" 
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none">
                     </div>
 
                     <div>
                         <label class="block text-gray-700 font-semibold mb-1">মন্তব্য</label>
-                        <textarea id="inputComment" rows="3" placeholder="আপনার মন্তব্য বা মতামত লিখুন" 
+                        <textarea id="inputComment" rows="3" oninput="updatePost()" placeholder="আপনার মন্তব্য বা মতামত লিখুন" 
                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"></textarea>
                     </div>
 
                     <div>
                         <label class="block text-gray-700 font-semibold mb-1">ছবি আপলোড করুন</label>
-                        <input type="file" id="inputImage" accept="image/*" 
+                        <input type="file" id="inputImage" onchange="updatePost()" accept="image/*" 
                                class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer">
                     </div>
 
@@ -52,13 +51,13 @@
         </div>
 
         <div class="bg-white p-6 rounded-2xl shadow-lg border border-green-100 flex flex-col items-center justify-between">
-            <h2 class="text-xl font-bold text-gray-700 mb-4 text-center">লাইভ পোস্ট ভিউ</h2>
+            <h2 class="text-xl font-bold text-gray-700 mb-4 text-center">সবাই একসাথে আওয়াজ তুলুন</h2>
             
             <div id="posterCard" class="w-full max-w-sm bg-gradient-to-b from-green-50 to-green-100 rounded-2xl p-6 border-4 border-green-600 shadow-inner relative overflow-hidden flex flex-col justify-between aspect-square">
                 
                 <div class="flex justify-between items-start gap-4 z-10">
-                    <div class="w-24 h-24 bg-white rounded-full border-4 border-white shadow-md flex items-center justify-center overflow-hidden shrink-0">
-                        <img id="viewImage" src="https://via.placeholder.com/150?text=ছবির+ঘর" alt="User Photo" class="w-full h-full object-cover">
+                    <div class="w-24 h-24 bg-gray-200 rounded-full border-4 border-white shadow-md flex items-center justify-center overflow-hidden shrink-0">
+                        <img id="viewImage" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23cccccc'/></svg>" alt="User Photo" class="w-full h-full object-cover">
                     </div>
                     
                     <div class="flex-1 bg-white/90 p-3 rounded-xl border border-green-200 min-h-[96px] max-h-[120px] overflow-y-auto">
@@ -68,13 +67,8 @@
                 </div>
 
                 <div class="my-4 text-center flex flex-col items-center justify-center relative z-10">
-                    <div class="flex items-center gap-3">
-                        <div class="bg-red-600 text-white font-black text-2xl px-4 py-1 rounded-md shadow-sm transform -rotate-1 tracking-wide">
-                            চিতোষী নামে
-                        </div>
-                        <div class="text-green-600 text-3xl animate-bounce">
-                            <i class="fa-solid fa-fist-raised"></i>
-                        </div>
+                    <div class="bg-red-600 text-white font-black text-2xl px-4 py-1 rounded-md shadow-sm transform -rotate-1 tracking-wide">
+                        চিতোষী নামে
                     </div>
                     <div class="text-green-700 font-black text-3xl mt-1 tracking-wider drop-shadow-sm">
                         উপজেলা চাই
@@ -88,14 +82,13 @@
 
             <button onclick="downloadJPEG()" 
                     class="mt-6 w-full max-w-sm bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-md flex items-center justify-center gap-2 cursor-pointer">
-                <i class="fa-solid fa-download"></i> পোস্টার ডাউনলোড করুন (JPEG)
+                পোস্টার ডাউনলোড করুন (JPEG)
             </button>
         </div>
 
     </div>
 
     <script>
-        // ফর্মের তথ্য লাইভ ভিউতে আপডেট করার ফাংশন
         function updatePost() {
             const name = document.getElementById('inputName').value.trim();
             const comment = document.getElementById('inputComment').value.trim();
@@ -122,21 +115,27 @@
             }
         }
 
-        // পোস্টার কার্ডটিকে JPEG হিসেবে ডাউনলোড করার ফাংশن
         function downloadJPEG() {
             const poster = document.getElementById('posterCard');
             
-            // সুন্দর ও নিখুঁত কোয়ালিটির ছবির জন্য অপশন সেট করা হয়েছে
+            // মোবাইল ফ্রেন্ডলি ডাউনলোড লজিক
             html2canvas(poster, {
                 useCORS: true, 
-                scale: 2, // ছবির রেজোলিউশন ডাবল করার জন্য
+                allowTaint: true,
+                scale: 2, 
                 backgroundColor: '#f0fdf4'
             }).then(canvas => {
-                // ক্যানভাসকে JPEG ফরম্যাটে রূপান্তর
-                const link = document.createElement('a');
-                link.download = 'chitoshi_upazila_poster.jpg';
-                link.href = canvas.toDataURL('image/jpeg', 0.9); // ০.৯ মানে ৯০% হাই কোয়ালিটি ছবি
-                link.click();
+                canvas.toBlob(function(blob) {
+                    const link = document.createElement('a');
+                    link.download = 'chitoshi_upazila_poster.jpg';
+                    link.href = URL.createObjectURL(blob);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }, 'image/jpeg', 0.95);
+            }).catch(err => {
+                console.error("ডাউনলোড করতে সমস্যা হয়েছে:", err);
+                alert("দুঃখিত, ছবি সেভ করা যায়নি। দয়া করে অন্য একটি ব্রাউজার (যেমন Chrome) ব্যবহার করুন।");
             });
         }
     </script>
