@@ -84,12 +84,27 @@
                 </div>
             </div>
 
-            <button onclick="downloadJPEG()" 
+            <button onclick="generatePoster()" 
                     class="mt-6 w-full max-w-sm bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-md flex items-center justify-center gap-2 cursor-pointer">
-                পোস্টার ডাউনলোড করুন (JPEG)
+                পোস্টার তৈরি করুন ও ডাউনলোড করুন
             </button>
         </div>
 
+    </div>
+
+    <div id="imageModal" class="fixed inset-0 bg-black/80 flex flex-col items-center justify-center hidden z-50 p-4">
+        <div class="bg-white p-4 rounded-2xl max-w-sm w-full text-center relative shadow-2xl">
+            <h3 class="text-lg font-bold text-gray-800 mb-2">আপনার পোস্টার তৈরি হয়েছে!</h3>
+            <p class="text-sm text-red-600 font-semibold mb-4">💡 ছবির ওপর আঙুল দিয়ে চেপে ধরে (Long Press) "Save Image" বা "Download" এ ক্লিক করুন।</p>
+            
+            <div class="w-full border border-gray-200 rounded-xl overflow-hidden shadow-md">
+                <img id="finalGeneratedImage" src="" alt="Generated Poster" class="w-full h-auto object-contain">
+            </div>
+
+            <button onclick="closeModal()" class="mt-4 bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-6 rounded-lg transition duration-150 cursor-pointer">
+                বন্ধ করুন
+            </button>
+        </div>
     </div>
 
     <script>
@@ -119,43 +134,31 @@
             }
         }
 
-        function downloadJPEG() {
-            // ইন-অ্যাপ ব্রাউজার (Facebook, Messenger, Instagram ইত্যাদি) চেক করার জন্য
-            const ua = navigator.userAgent || navigator.vendor || window.opera;
-            const isLocalStorageApp = (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Instagram") > -1);
-            
-            if (isLocalStorageApp) {
-                // ইন-অ্যাপ ব্রাউজার হলে সরাসরি অ্যান্ড্রয়েড ক্রোম ব্রাউজারে রিডাইরেক্ট করবে
-                const currentUrl = window.location.href.replace(/^https?:\/\//, '');
-                const chromeIntent = "intent://" + currentUrl + "#Intent;scheme=https;package=com.android.chrome;end";
-                
-                alert("নিরাপদ ও সঠিক ডাউনলোডের জন্য ক্রোম (Chrome) ব্রাউজার ওপেন করা হচ্ছে। অনুগ্রহ করে ক্রোম ব্রাউজারে তথ্যগুলো আরেকবার দিয়ে সেভ করুন।");
-                window.location.href = chromeIntent;
-                return;
-            }
-
+        function generatePoster() {
             const poster = document.getElementById('posterCard');
             
-            // html2canvas রেন্ডারিং নিখুঁত করার জন্য কনফিগারেশন পরিবর্তন
+            // মোবাইল অ্যাপ ওয়েবভিউ ফ্রেন্ডলি রেন্ডারিং
             html2canvas(poster, {
                 useCORS: true, 
                 allowTaint: true,
-                scale: 3, // আরও পরিষ্কার ও হাই কোয়ালিটি ছবির জন্য স্কেল বাড়িয়ে ৩ করা হলো
+                scale: 3, 
                 backgroundColor: '#f0fdf4',
                 logging: false
             }).then(canvas => {
-                canvas.toBlob(function(blob) {
-                    const link = document.createElement('a');
-                    link.download = 'chitoshi_upazila_poster.jpg';
-                    link.href = URL.createObjectURL(blob);
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }, 'image/jpeg', 1.0); // শতভাগ হাই কোয়ালিটি (1.0)
+                // ক্যানভাসকে সরাসরি ইমেজ ডেটাতে রূপান্তর
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                
+                // মডাল উইন্ডো ওপেন করে ইমেজ ট্যাগ এ ডেটা পুশ করা
+                document.getElementById('finalGeneratedImage').src = imgData;
+                document.getElementById('imageModal').classList.remove('hidden');
             }).catch(err => {
-                console.error("ডাউনলোড করতে সমস্যা হয়েছে:", err);
-                alert("দুঃখিত, ছবি সেভ করা যায়নি। দয়া করে গুগল ক্রোম ব্রাউজার ব্যবহার করুন।");
+                console.error("Image generation failed:", err);
+                alert("দুঃখিত, প্রযুক্তিগত সীমাবদ্ধতার কারণে ছবি তৈরি করা যায়নি। অনুগ্রহ করে ক্রোম ব্রাউজার ব্যবহার করুন।");
             });
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').classList.add('hidden');
         }
     </script>
 </body>
