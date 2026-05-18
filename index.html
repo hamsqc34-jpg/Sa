@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>চিতোষী উপজেলা চাই - পোস্ট মেকার</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
@@ -68,7 +67,7 @@
 
                 <div class="my-2 text-center flex flex-col items-center justify-center relative">
                     <div class="mb-2 max-w-[60px] max-h-[60px] overflow-hidden">
-                        <img id="logoView" src="https://i.postimg.cc/6QJ02jGV/20260518-125112.png" alt="Logo" class="w-full h-full object-contain">
+                        <img id="logoView" src="https://i.postimg.cc/6QJ02jGV/20260518-125112.png" crossOrigin="anonymous" alt="Logo" class="w-full h-full object-contain">
                     </div>
 
                     <div class="bg-red-600 text-white font-black text-xl px-4 py-1 rounded-md shadow-sm transform -rotate-1 tracking-wide">
@@ -92,7 +91,11 @@
 
     </div>
 
+    <canvas id="hiddenCanvas" style="display:none;"></canvas>
+
     <script>
+        let userImageBase64 = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><circle cx='50' cy='50' r='40' fill='%23cccccc'/></svg>";
+
         function updatePost() {
             const name = document.getElementById('inputName').value.trim();
             const comment = document.getElementById('inputComment').value.trim();
@@ -113,69 +116,154 @@
             if (imageInput.files && imageInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('viewImage').src = e.target.result;
+                    userImageBase64 = e.target.result;
+                    document.getElementById('viewImage').src = userImageBase64;
                 }
                 reader.readAsDataURL(imageInput.files[0]);
             }
         }
 
+        // html2canvas এর সিকিউরিটি জটলা ছাড়া সরাসরি ড্রয়িং ও ডাউনলোডের মেথড
         function downloadJPEG() {
-            // ১. ইউজার ডাটা চেক করার জন্য ইউজার এজেন্ট নেওয়া
-            const ua = navigator.userAgent.toLowerCase();
+            const canvas = document.getElementById('hiddenCanvas');
+            const ctx = canvas.getContext('2d');
             
-            // ২. ইউআরএল প্যারামিটার থেকে চেক করা যে অলরেডি ক্রোমে রিডাইরেক্টেড কি না
-            const urlParams = new URLSearchParams(window.location.search);
-            const isForcedChrome = urlParams.get('browser') === 'chrome';
+            // হাই-ডেফিনিশন স্কয়ার সাইজ (1000x1000px)
+            canvas.width = 1000;
+            canvas.height = 1000;
 
-            // ৩. চিতোষী সেবা অ্যাপ (WebView), ফেসবুক বা ইন-অ্যাপ ডিটেকশন লজিক
-            const isAppWebView = ua.includes("wv") || ua.includes("fban") || ua.includes("fbav") || ua.includes("instagram");
+            // ১. ব্যাকগ্রাউন্ড গ্রেডিয়েন্ট
+            let gradient = ctx.createLinearGradient(0, 0, 0, 1000);
+            gradient.addColorStop(0, '#f0fdf4');
+            gradient.addColorStop(1, '#dcfce7');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 1000, 1000);
 
-            // ৪. যদি ইউজার আপনার অ্যাপের (WebView) ভেতরে থাকে এবং এখনো ক্রোম ফোর্স ইউআরএলে না যায়
-            if (isAppWebView && !isForcedChrome) {
-                // বর্তমান ওয়েবসাইটের ইউআরএল বের করা
-                let currentUrl = window.location.href;
+            // ২. মূল সবুজ বর্ডার
+            ctx.strokeStyle = '#16a34a';
+            ctx.lineWidth = 18;
+            ctx.strokeRect(35, 35, 930, 930);
+
+            const nameText = document.getElementById('viewName').innerText;
+            const commentText = document.getElementById('viewComment').innerText;
+
+            let userImg = new Image();
+            userImg.src = userImageBase64;
+            
+            userImg.onload = function() {
+                // প্রোফাইল পিকচার (বাম পাশে)
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(220, 220, 110, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.clip();
+                ctx.drawImage(userImg, 110, 110, 220, 220);
+                ctx.restore();
+
+                // প্রোফাইল পিকচারের সাদা বর্ডার
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 12;
+                ctx.beginPath();
+                ctx.arc(220, 220, 110, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // ৩. মন্তব্য বক্স (ডান পাশে)
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                ctx.strokeStyle = '#bbf7d0';
+                ctx.lineWidth = 3;
+                roundRect(ctx, 400, 110, 490, 220, 24, true, true);
+
+                // মন্তব্য হেডার ও মূল টেক্সট
+                ctx.fillStyle = '#4b5563';
+                ctx.font = 'bold 28px "Hind Siliguri", sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText("মন্তব্য:", 425, 160);
+
+                ctx.fillStyle = '#374151';
+                ctx.font = '500 30px "Hind Siliguri", sans-serif';
+                wrapText(ctx, commentText, 425, 210, 440, 42);
+
+                // ৪. মাঝের লোগো লোড ও রেন্ডার
+                let logoImg = new Image();
+                logoImg.src = document.getElementById('logoView').src;
+                logoImg.crossOrigin = "anonymous";
                 
-                // ইউআরএল এর সাথে একটি ট্র্যাকিং প্যারামিটার যোগ করা যাতে ক্রোমে গিয়ে লুপ না হয়
-                if (currentUrl.includes('?')) {
-                    currentUrl += '&browser=chrome';
+                logoImg.onload = function() {
+                    ctx.drawImage(logoImg, 435, 420, 130, 130);
+
+                    // ৫. লাল ব্যানার (চিতোষী নামে)
+                    ctx.save();
+                    ctx.translate(500, 640);
+                    ctx.rotate(-0.02);
+                    ctx.fillStyle = '#dc2626';
+                    roundRect(ctx, -190, -50, 380, 85, 12, true, false);
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '900 46px "Hind Siliguri", sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText("চিতোষী নামে", 0, 10);
+                    ctx.restore();
+
+                    // ৬. সবুজ স্লোগান টেক্সট (উপজেলা চাই)
+                    ctx.fillStyle = '#15803d';
+                    ctx.font = '900 64px "Hind Siliguri", sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText("উপজেলা চাই", 500, 770);
+
+                    // ৭. আপনার নাম ব্যানার (নিচে)
+                    ctx.fillStyle = '#047857';
+                    roundRect(ctx, 110, 835, 780, 90, 24, true, false);
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 42px "Hind Siliguri", sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(nameText, 500, 895);
+
+                    // সরাসরি আগের মতো ব্যাকগ্রাউন্ড ডাউনলোড ট্রিগার
+                    canvas.toBlob(function(blob) {
+                        const link = document.createElement('a');
+                        link.download = 'chitoshi_upazila_poster.jpg';
+                        link.href = URL.createObjectURL(blob);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }, 'image/jpeg', 1.0);
+                };
+            };
+        }
+
+        function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            if (fill) ctx.fill();
+            if (stroke) ctx.stroke();
+        }
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            for (let n = 0; n < words.length; n++) {
+                let testLine = line + words[n] + ' ';
+                let metrics = ctx.measureText(testLine);
+                let testWidth = metrics.width;
+                if (testWidth > maxWidth && n > 0) {
+                    ctx.fillText(line, x, y);
+                    line = words[n] + ' ';
+                    y += lineHeight;
                 } else {
-                    currentUrl += '?browser=chrome';
+                    line = testLine;
                 }
-                
-                // ক্লিন প্রোটোকল লিংক তৈরি (http/https সরিয়ে দেওয়া)
-                const cleanUrl = currentUrl.replace(/^https?:\/\//, '');
-                
-                // অ্যান্ড্রয়েড সিস্টেমের মূল ক্রোম ব্রাউজার ওপেন করার অফিশিয়াল ইনটেন্ট লিংক
-                const chromeIntent = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end";
-                
-                // ইউজারকে মেসেজ দিয়ে সরাসরি ফোনের ক্রোমে ট্রান্সফার করা
-                alert("চিতোষী সেবা অ্যাপ থেকে ক্রোম ব্রাউজার ওপেন করা হচ্ছে। সঠিক ডাউনলোডের জন্য ক্রোম ব্রাউজারে তথ্য দিয়ে ডাউনলোড বাটনে চাপ দিন।");
-                window.location.href = chromeIntent;
-                return;
             }
-
-            // ৫. ক্রোম ব্রাউজারে থাকলে সরাসরি ক্যানভাস তৈরি করে ডাউনলোড প্রসেস হবে
-            const poster = document.getElementById('posterCard');
-            
-            html2canvas(poster, {
-                useCORS: true, 
-                allowTaint: true,
-                scale: 3, // ক্রিস্টাল ক্লিয়ার এইচডি ছবির জন্য স্কেল ৩
-                backgroundColor: '#f0fdf4',
-                logging: false
-            }).then(canvas => {
-                canvas.toBlob(function(blob) {
-                    const link = document.createElement('a');
-                    link.download = 'chitoshi_upazila_poster.jpg';
-                    link.href = URL.createObjectURL(blob);
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }, 'image/jpeg', 1.0); // সর্বোচ্চ হাই কোয়ালিটি JPEG
-            }).catch(err => {
-                console.error("ডাউনলোড করতে সমস্যা হয়েছে:", err);
-                alert("দুঃখিত, ছবি সেভ করা যায়নি। দয়া করে গুগল ক্রোম ব্রাউজার ব্যবহার করুন।");
-            });
+            ctx.fillText(line, x, y);
         }
     </script>
 </body>
