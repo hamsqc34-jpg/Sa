@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;900&display=swap');
         body {
             font-family: 'Hind Siliguri', sans-serif;
             background-color: #f0fdf4;
@@ -65,16 +65,18 @@
                     </div>
                 </div>
 
-                <div class="my-2 text-center flex flex-col items-center justify-center relative">
-                    <div class="mb-2 max-w-[60px] max-h-[60px] overflow-hidden">
+                <div class="my-2 flex items-center justify-center gap-3 relative">
+                    <div class="w-16 h-16 overflow-hidden shrink-0">
                         <img id="logoView" src="https://i.postimg.cc/6QJ02jGV/20260518-125112.png" crossOrigin="anonymous" alt="Logo" class="w-full h-full object-contain">
                     </div>
 
-                    <div class="bg-red-600 text-white font-black text-xl px-4 py-1 rounded-md shadow-sm transform -rotate-1 tracking-wide">
-                        চিতোষী নামে
-                    </div>
-                    <div class="text-green-700 font-black text-2xl mt-1 tracking-wider drop-shadow-sm">
-                        উপজেলাচাই
+                    <div class="text-left">
+                        <div class="bg-red-600 text-white font-black text-xl px-3 py-1 rounded-md shadow-sm transform -rotate-1 inline-block tracking-wide">
+                            চিতোষী নামে
+                        </div>
+                        <div class="text-green-700 font-black text-3xl mt-0.5 tracking-wider drop-shadow-sm">
+                            উপজেলা চাই
+                        </div>
                     </div>
                 </div>
 
@@ -123,23 +125,19 @@
             }
         }
 
-        // html2canvas এর সিকিউরিটি জটলা ছাড়া সরাসরি ড্রয়িং ও ডাউনলোডের মেথড
         function downloadJPEG() {
             const canvas = document.getElementById('hiddenCanvas');
             const ctx = canvas.getContext('2d');
             
-            // হাই-ডেফিনিশন স্কয়ার সাইজ (1000x1000px)
             canvas.width = 1000;
             canvas.height = 1000;
 
-            // ১. ব্যাকগ্রাউন্ড গ্রেডিয়েন্ট
             let gradient = ctx.createLinearGradient(0, 0, 0, 1000);
             gradient.addColorStop(0, '#f0fdf4');
             gradient.addColorStop(1, '#dcfce7');
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, 1000, 1000);
 
-            // ২. মূল সবুজ বর্ডার
             ctx.strokeStyle = '#16a34a';
             ctx.lineWidth = 18;
             ctx.strokeRect(35, 35, 930, 930);
@@ -151,7 +149,6 @@
             userImg.src = userImageBase64;
             
             userImg.onload = function() {
-                // প্রোফাইল পিকচার (বাম পাশে)
                 ctx.save();
                 ctx.beginPath();
                 ctx.arc(220, 220, 110, 0, Math.PI * 2);
@@ -160,20 +157,17 @@
                 ctx.drawImage(userImg, 110, 110, 220, 220);
                 ctx.restore();
 
-                // প্রোফাইল পিকচারের সাদা বর্ডার
                 ctx.strokeStyle = '#ffffff';
                 ctx.lineWidth = 12;
                 ctx.beginPath();
                 ctx.arc(220, 220, 110, 0, Math.PI * 2);
                 ctx.stroke();
 
-                // ৩. মন্তব্য বক্স (ডান পাশে)
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
                 ctx.strokeStyle = '#bbf7d0';
                 ctx.lineWidth = 3;
                 roundRect(ctx, 400, 110, 490, 220, 24, true, true);
 
-                // মন্তব্য হেডার ও মূল টেক্সট
                 ctx.fillStyle = '#4b5563';
                 ctx.font = 'bold 28px "Hind Siliguri", sans-serif';
                 ctx.textAlign = 'left';
@@ -183,34 +177,30 @@
                 ctx.font = '500 30px "Hind Siliguri", sans-serif';
                 wrapText(ctx, commentText, 425, 210, 440, 42);
 
-                // ৪. মাঝের লোগো লোড ও রেন্ডার
                 let logoImg = new Image();
                 logoImg.src = document.getElementById('logoView').src;
                 logoImg.crossOrigin = "anonymous";
                 
                 logoImg.onload = function() {
-                    ctx.drawImage(logoImg, 435, 420, 130, 130);
+                    ctx.drawImage(logoImg, 200, 510, 160, 160);
 
-                    // ৫. লাল ব্যানার (চিতোষী নামে)
                     ctx.save();
-                    ctx.translate(500, 640);
+                    ctx.translate(610, 545);
                     ctx.rotate(-0.02);
                     ctx.fillStyle = '#dc2626';
-                    roundRect(ctx, -190, -50, 380, 85, 12, true, false);
+                    roundRect(ctx, -210, -50, 420, 95, 14, true, false);
                     
                     ctx.fillStyle = '#ffffff';
-                    ctx.font = '900 46px "Hind Siliguri", sans-serif';
+                    ctx.font = '900 54px "Hind Siliguri", sans-serif';
                     ctx.textAlign = 'center';
-                    ctx.fillText("চিতোষী নামে", 0, 10);
+                    ctx.fillText("চিতোষী নামে", 0, 16);
                     ctx.restore();
 
-                    // ৬. সবুজ স্লোগান টেক্সট (উপজেলা চাই)
                     ctx.fillStyle = '#15803d';
-                    ctx.font = '900 64px "Hind Siliguri", sans-serif';
-                    ctx.textAlign = 'center';
-                    ctx.fillText("উপজেলা চাই", 500, 770);
+                    ctx.font = '900 82px "Hind Siliguri", sans-serif';
+                    ctx.textAlign = 'left';
+                    ctx.fillText("উপজেলা চাই", 400, 680);
 
-                    // ৭. আপনার নাম ব্যানার (নিচে)
                     ctx.fillStyle = '#047857';
                     roundRect(ctx, 110, 835, 780, 90, 24, true, false);
 
@@ -219,15 +209,43 @@
                     ctx.textAlign = 'center';
                     ctx.fillText(nameText, 500, 895);
 
-                    // সরাসরি আগের মতো ব্যাকগ্রাউন্ড ডাউনলোড ট্রিগার
-                    canvas.toBlob(function(blob) {
-                        const link = document.createElement('a');
-                        link.download = 'chitoshi_upazila_poster.jpg';
-                        link.href = URL.createObjectURL(blob);
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    }, 'image/jpeg', 1.0);
+                    // ফেসবুক/ইন-অ্যাপ ব্রাউজারের জন্য বিশেষ ইউনিভার্সাল সেভ মেথড
+                    try {
+                        const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
+                        
+                        // একটি নতুন উইন্ডো বা ট্যাব খুলে ইমেজটি লোড করা
+                        const newWindow = window.open();
+                        if (newWindow) {
+                            newWindow.document.write(`
+                                <html>
+                                <head>
+                                    <title>পোস্টার ডাউনলোড করুন</title>
+                                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                    <style>
+                                        body { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #222; color: #fff; font-family: sans-serif; text-align: center; padding: 20px; }
+                                        img { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); margin-bottom: 20px; }
+                                        p { font-size: 16px; font-weight: bold; }
+                                    </style>
+                                </head>
+                                <body>
+                                    <img src="${dataUrl}" alt="Poster"/>
+                                    <p>ছবির ওপর ২ সেকেন্ড চেপে ধরে (Long Press) "Save Image" বা "Download Image" এ ক্লিক করুন।</p>
+                                </body>
+                                </html>
+                            `);
+                            newWindow.document.close();
+                        } else {
+                            // যদি পপআপ ব্লক হয়, তাহলে স্বাভাবিক ডাউনলোডের চেষ্টা করবে
+                            const link = document.createElement('a');
+                            link.download = 'chitoshi_upazila_poster.jpg';
+                            link.href = dataUrl;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        }
+                    } catch (error) {
+                        alert("অনুগ্রহ করে ক্রোম বা অন্য যেকোনো সাধারণ ব্রাউজার ব্যবহার করুন।");
+                    }
                 };
             };
         }
